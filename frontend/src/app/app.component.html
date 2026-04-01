@@ -1,0 +1,27 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+  <a class="navbar-brand fw-bold" routerLink="/dashboard">
+    Finance Tracker
+  </a>
+
+  <div class="ms-auto d-flex gap-2 flex-wrap">
+    <a class="btn btn-outline-light" routerLink="/dashboard">
+      Dashboard
+    </a>
+
+    <a class="btn btn-outline-light" routerLink="/stock">
+      Stocks
+    </a>
+
+    <a class="btn btn-outline-light" routerLink="/portfolio">
+      Portfolio
+    </a>
+
+    <button
+      class="btn btn-danger"
+      (click)="logout()">
+      Logout
+    </button>
+  </div>
+</nav>
+
+<router-outlet></router-outlet>
