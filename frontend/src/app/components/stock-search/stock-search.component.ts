@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PortfolioService } from '../../services/portfolio.service';
+import { WatchlistService } from '../../services/watchlist.service';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Chart, registerables } from 'chart.js';
@@ -24,7 +25,8 @@ export class StockSearchComponent {
 
   constructor(
     private http: HttpClient,
-    private portfolioService: PortfolioService
+    private portfolioService: PortfolioService,
+    private watchlistService: WatchlistService
   ) {}
 
   fetchSuggestions() {
@@ -149,6 +151,36 @@ export class StockSearchComponent {
       error: (err) => {
         console.log('Add error:', err);
         alert('Error adding stock');
+      }
+    });
+  }
+
+  addToWatchlist() {
+    if (!this.stock) {
+      alert('Search a stock first');
+      return;
+    }
+
+    const data = {
+      symbol: this.stock.symbol,
+      companyName: this.stock.name
+    };
+
+    console.log('Sending watchlist data:', data);
+
+    this.watchlistService.addToWatchlist(data).subscribe({
+      next: (res: any) => {
+        console.log('Watchlist response:', res);
+        alert('Added to watchlist');
+      },
+      error: (err) => {
+        console.log('Watchlist error:', err);
+
+        if (err?.error?.message) {
+          alert(err.error.message);
+        } else {
+          alert('Error adding to watchlist');
+        }
       }
     });
   }
