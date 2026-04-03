@@ -15,7 +15,8 @@ export class AppComponent implements OnInit {
 
   tickerData: any[] = [];
   showNavbar = false;
-  showTicker = true;
+  showTicker = false;
+  tickerInterval: any;
 
   constructor(
     private authService: AuthService,
@@ -31,8 +32,6 @@ export class AppComponent implements OnInit {
       .subscribe((event: any) => {
         this.updateLayout(event.urlAfterRedirects);
       });
-
-    this.loadTicker(); // fetch only once per browser session
   }
 
   updateLayout(url: string) {
@@ -45,40 +44,53 @@ export class AppComponent implements OnInit {
 
     this.showNavbar = !isPublicPage && loggedIn;
     this.showTicker = true;
+
+    if (this.showTicker && !this.tickerInterval) {
+      this.startTicker();
+    }
+
+    if (!this.showTicker && this.tickerInterval) {
+      clearInterval(this.tickerInterval);
+      this.tickerInterval = null;
+      this.tickerData = [];
+    }
+  }
+
+  startTicker() {
+    this.loadTicker();
+
+    this.tickerInterval = setInterval(() => {
+      if (this.authService.isLoggedIn()) {
+        this.loadTicker();
+      }
+    }, 15000);
   }
 
   loadTicker() {
-    const cachedTicker = sessionStorage.getItem('tickerData');
-
-    if (cachedTicker) {
-      this.tickerData = JSON.parse(cachedTicker);
-      return;
-    }
-
-    const symbols = ['AAPL', 'TSLA', 'MSFT', 'GOOGL', 'AMZN'];
-    let temp: any[] = [];
-
-    symbols.forEach(symbol => {
-      this.http.get(`http://localhost:5000/api/stocks/${symbol}`)
-        .subscribe((res: any) => {
-          temp.push({
-            symbol: res.symbol,
-            price: Number(res.close),
-            change: Number(res.change)
-          });
-
-          if (temp.length === symbols.length) {
-            this.tickerData = [...temp, ...temp];
-            sessionStorage.setItem('tickerData', JSON.stringify(this.tickerData));
-          }
-        });
-    });
+    this.http.get('http://localhost:5000/api/stocks/ticker')
+      .subscribe({
+        next: (res: any) => {
+          const data = res?.data || [];
+          this.tickerData = [...data, ...data];
+          console.log('Ticker count:', res?.count);
+        },
+        error: (err) => {
+          console.log('Ticker error:', err);
+        }
+      });
   }
 
   logout() {
     this.authService.logout();
     this.showNavbar = false;
-    this.showTicker = false;
+    this.showTicker = true;
+
+    if (this.tickerInterval) {
+      clearInterval(this.tickerInterval);
+      this.tickerInterval = null;
+    }
+
+    this.tickerData = [];
     this.router.navigate(['/login']);
   }
 }
