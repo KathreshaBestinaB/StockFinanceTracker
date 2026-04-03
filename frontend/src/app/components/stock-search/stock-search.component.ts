@@ -5,13 +5,14 @@ import { WatchlistService } from '../../services/watchlist.service';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Chart, registerables } from 'chart.js';
+import { StockNewsComponent } from '../stock-news/stock-news.component';
 
 Chart.register(...registerables);
 
 @Component({
   selector: 'app-stock-search',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, StockNewsComponent],
   templateUrl: './stock-search.component.html'
 })
 export class StockSearchComponent {

@@ -111,4 +111,8 @@
     </div>
   </div>
 
+  <div *ngIf="stock" class="card p-4 mt-4">
+    <app-stock-news [symbol]="stock.symbol"></app-stock-news>
+  </div>
+
 </div>

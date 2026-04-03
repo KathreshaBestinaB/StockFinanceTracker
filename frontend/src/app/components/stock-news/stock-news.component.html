@@ -1,0 +1,53 @@
+<div class="news-section">
+  <h4 class="mb-3">Latest News for {{ symbol }}</h4>
+
+  <div *ngIf="loading" class="text-center py-3">
+    Loading news...
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error && articles.length === 0" class="alert alert-secondary">
+    No news found for this stock.
+  </div>
+
+  <div class="row" *ngIf="articles.length > 0">
+    <div class="col-md-6 mb-3" *ngFor="let article of articles">
+      <div class="card h-100 shadow-sm">
+        <img
+          *ngIf="article.image_url"
+          [src]="article.image_url"
+          class="card-img-top"
+          alt="news image"
+          style="height: 200px; object-fit: cover;"
+        />
+
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">{{ article.title }}</h5>
+
+          <p class="card-text text-muted small">
+            {{ article.source }} • {{ article.published_at | date:'medium' }}
+          </p>
+
+          <p class="card-text">
+            {{ article.description || 'No summary available.' }}
+          </p>
+
+          <span *ngIf="article.sentiment" class="badge bg-info text-dark mb-2 align-self-start">
+            {{ article.sentiment }}
+          </span>
+
+          <a
+            [href]="article.url"
+            target="_blank"
+            class="btn btn-outline-primary mt-auto"
+          >
+            Read More
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

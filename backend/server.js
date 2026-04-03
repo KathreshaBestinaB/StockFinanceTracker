@@ -12,11 +12,14 @@ const authRoutes = require("./routes/authRoutes");
 const stockRoutes = require("./routes/stockRoutes");
 const portfolioRoutes = require("./routes/portfolioRoutes");
 const watchlistRoutes = require("./routes/watchlistRoutes");
+const newsRoutes = require('./routes/newsRoutes');
+
 
 app.use("/api/auth", authRoutes);
 app.use("/api/stocks", stockRoutes);
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api/watchlist", watchlistRoutes);
+app.use('/api/news', newsRoutes);
 
 app.get("/", (req, res) => {
     res.send("Finance Tracker API Running");
