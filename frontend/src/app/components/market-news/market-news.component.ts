@@ -14,8 +14,10 @@ export class MarketNewsComponent implements OnInit {
   displayedArticles: NewsArticle[] = [];
   loading = false;
   error = '';
+  topStories: NewsArticle[] = [];
+  visibleCount = 3;
 
-  visibleCount = 4;
+  //visibleCount = 9;
 
   constructor(private newsService: NewsService) {}
 
@@ -31,10 +33,14 @@ export class MarketNewsComponent implements OnInit {
 
     this.newsService.getGeneralNews().subscribe({
       next: (res) => {
-        this.articles = res.articles || [];
-        this.updateDisplayedArticles();
-        this.loading = false;
-      },
+  this.articles = res.articles || [];
+
+  // First 2 as top stories
+  this.topStories = this.articles.slice(0, 2);
+
+  this.updateDisplayedArticles();
+  this.loading = false;
+},
       error: () => {
         this.error = 'Failed to load market news';
         this.loading = false;
@@ -43,18 +49,18 @@ export class MarketNewsComponent implements OnInit {
   }
 
   updateDisplayedArticles(): void {
-    this.displayedArticles = this.articles.slice(0, this.visibleCount);
-  }
+  this.displayedArticles = this.articles.slice(2, 2 + this.visibleCount);
+}
 
   loadMore(): void {
-    this.visibleCount += 4;
-    this.updateDisplayedArticles();
-  }
+  this.visibleCount += 3;
+  this.updateDisplayedArticles();
+}
 
-  showLess(): void {
-    this.visibleCount = 4;
-    this.updateDisplayedArticles();
-  }
+showLess(): void {
+  this.visibleCount = 3;
+  this.updateDisplayedArticles();
+}
 
   get hasMore(): boolean {
     return this.visibleCount < this.articles.length;

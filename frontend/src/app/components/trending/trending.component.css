@@ -1,0 +1,8 @@
+.trend-card {
+  border-radius: 12px;
+  transition: 0.2s;
+}
+
+.trend-card:hover {
+  transform: translateY(-5px);
+}

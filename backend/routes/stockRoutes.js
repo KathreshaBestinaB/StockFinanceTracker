@@ -2,6 +2,42 @@ const express = require("express");
 const axios = require("axios");
 const router = express.Router();
 
+router.get('/trending', async (req, res) => {
+  try {
+    const symbols = ['AAPL', 'TSLA', 'NVDA', 'AMZN', 'MSFT'];
+    const results = [];
+
+    for (const symbol of symbols) {
+      try {
+        const response = await axios.get('https://api.twelvedata.com/quote', {
+          params: {
+            symbol,
+            apikey: process.env.STOCK_API_KEY
+          }
+        });
+
+        console.log(symbol, response.data);
+
+        if (!response.data || response.data.status === 'error') {
+          continue;
+        }
+
+        results.push({
+          symbol,
+          price: parseFloat(response.data.close) || 0,
+          change: parseFloat(response.data.percent_change) || 0
+        });
+      } catch (err) {
+        console.log(`Error for ${symbol}:`, err.response?.data || err.message);
+      }
+    }
+
+    res.json({ stocks: results });
+  } catch (error) {
+    console.error('Trending route error:', error.response?.data || error.message);
+    res.status(500).json({ message: 'Failed to fetch trending stocks' });
+  }
+});
 // search keyword
 router.get("/search/:keyword", async (req, res) => {
     try {
