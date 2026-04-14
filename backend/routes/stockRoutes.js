@@ -165,6 +165,19 @@ router.get("/search/:keyword", async (req, res) => {
   }
 });
 
+// prediction route
+router.get('/predict/:symbol', async (req, res) => {
+  try {
+    const symbol = req.params.symbol.toUpperCase();
+
+    const response = await axios.get(`http://127.0.0.1:8000/predict/${symbol}`);
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Prediction API error:', error.response?.data || error.message);
+    res.status(500).json({ message: 'Failed to fetch stock prediction' });
+  }
+});
 // chart data
 router.get("/chart/:symbol", async (req, res) => {
   try {
@@ -183,6 +196,8 @@ router.get("/chart/:symbol", async (req, res) => {
   }
 });
 
+
+
 // current stock quote
 router.get("/:symbol", async (req, res) => {
   try {
@@ -200,5 +215,6 @@ router.get("/:symbol", async (req, res) => {
     });
   }
 });
+
 
 module.exports = router;

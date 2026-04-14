@@ -25,7 +25,11 @@ export class StockService {
 
     return this.http.get(`${this.apiUrl}/${symbol}`, { headers });
   }
+  getPrediction(symbol: string) {
+  return this.http.get<any>(`http://localhost:5000/api/stocks/predict/${symbol}`);
+}
   getChartData(symbol: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/chart/${symbol}`);
   }
+  
 }

@@ -6,7 +6,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Chart, registerables } from 'chart.js';
 import { StockNewsComponent } from '../stock-news/stock-news.component';
-
+import { StockService } from '../../services/stock.service';
 Chart.register(...registerables);
 
 @Component({
@@ -24,10 +24,15 @@ export class StockSearchComponent {
   suggestions: any[] = [];
   chart: any;
 
+  prediction: any = null;
+  predictionLoading = false;
+  predictionError = '';
+
   constructor(
     private http: HttpClient,
     private portfolioService: PortfolioService,
-    private watchlistService: WatchlistService
+    private watchlistService: WatchlistService,
+    private StockService: StockService
   ) {}
 
   fetchSuggestions() {
@@ -60,6 +65,10 @@ export class StockSearchComponent {
 
     this.suggestions = [];
 
+    this.prediction = null;
+    this.predictionError = '';
+    this.predictionLoading = false;
+    
     this.http.get(`http://localhost:5000/api/stocks/${this.symbol}`).subscribe({
       next: (res: any) => {
         console.log('API Response:', res);
@@ -77,6 +86,7 @@ export class StockSearchComponent {
         console.log('Mapped Stock:', this.stock);
 
         this.loadChartData(this.stock.symbol);
+        this.fetchPrediction(this.stock.symbol);
       },
       error: (err) => {
         console.log('Search error:', err);
@@ -84,6 +94,8 @@ export class StockSearchComponent {
       }
     });
   }
+
+  
 
   loadChartData(symbol: string) {
     this.http
@@ -129,7 +141,22 @@ export class StockSearchComponent {
       }
     });
   }
+fetchPrediction(symbol: string): void {
+  this.predictionLoading = true;
+  this.predictionError = '';
+  this.prediction = null;
 
+  this.StockService.getPrediction(symbol).subscribe({
+    next: (res) => {
+      this.prediction = res;
+      this.predictionLoading = false;
+    },
+    error: () => {
+      this.predictionError = 'Failed to load prediction';
+      this.predictionLoading = false;
+    }
+  });
+}
   addToPortfolio() {
     if (!this.stock) {
       alert('Search a stock first');
